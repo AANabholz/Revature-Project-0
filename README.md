@@ -18,3 +18,4 @@ Class Descriptions:
 Noteable Known Weaknesses: 
   - The Service class is weaker than intended. As I started to get crunched for time I spent less time on encapsulation access. As I continue to iterate over the project I will adjust the sensitive data fields access modifiers and implement more corresponding methods in this class.
   - The Customer class was intended to hold more customer only data fields but to focus on implementing the Project requirements I have not yet come up with any. Flag was the only customer specific data field but I decided to implement password reset through the flag field so I moved this field to the user class so that employees would also have access.
+  - Loggging is not yet implemented.
