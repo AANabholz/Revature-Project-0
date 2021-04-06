@@ -73,20 +73,6 @@ public class Account extends BankCore implements Serializable{
 	}
 	
 	
-	// Read/Write
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		Account readAcct = (Account) ois.readObject();
-		for (String s : readAcct.owners)
-			this.owners.add(s);
-		id = readAcct.id;
-		type = readAcct.type;
-		flag = readAcct.flag;
-		balance = readAcct.balance;
-	}
-	
-	private void writeObject(ObjectOutputStream oos)throws IOException {
-		
-	}
 	
 	
 	// Getters

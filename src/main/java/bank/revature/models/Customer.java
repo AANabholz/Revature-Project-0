@@ -1,9 +1,5 @@
 package bank.revature.models;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-
 public class Customer extends User {
 	
 	// Customer object for user processing (Customers and First-Time-Users?)
@@ -46,24 +42,6 @@ public class Customer extends User {
 	
 	
 	
-	// Read/Write
-	private void readObject(ObjectInputStream ois) throws IOException, ClassNotFoundException {
-		ois.defaultReadObject();
-		Customer readCust = (Customer) ois.readObject();
-		username = readCust.username; 
-		password = readCust.password;
-		firstName = readCust.firstName;
-		lastName = readCust.lastName;
-		address = readCust.address;
-		phone = readCust.phone;
-		email = readCust.email;
-		userType = readCust.userType; 
-		flag = readCust.flag; 
-	}
-	
-	private void writeObject(ObjectOutputStream oos)throws IOException {
-		oos.defaultWriteObject();
-	}
 }
 		
 	

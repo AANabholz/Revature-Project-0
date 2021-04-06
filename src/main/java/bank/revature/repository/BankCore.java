@@ -65,7 +65,7 @@ public class BankCore{
 			}
 			ois.close();
 		} catch (EOFException e) {
-			e.printStackTrace();
+			//
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -89,7 +89,7 @@ public class BankCore{
 			}
 			ois.close();
 		} catch (EOFException e) {
-			e.printStackTrace();
+			//
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -113,7 +113,7 @@ public class BankCore{
 			}
 			ois.close();
 		} catch (EOFException e) {
-			e.printStackTrace();
+			//
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
