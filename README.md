@@ -9,9 +9,9 @@ Class Descriptions:
 * Employee - Child class of User. Holds employee specific information.
 * Account - An object for storing accounts in the bank system. Accounts and customers are not directly linked.
 * UserInterface - Handles all system input and output, and holds three engines.
-  > startEngine() is the first and last screen a user will see. It gives the user to create or sign into an account. Calls the corresponding engine based on the user type, customer or employee.
-  > customerEngine() is the customers source of access to thier accounts.
-  > employeeEngine() is the employees tool to perform all tasks necessary to thier role. Admin employees have access to more options and basic empmloyees.
+  >- startEngine() is the first and last screen a user will see. It gives the user to create or sign into an account. Calls the corresponding engine based on the user type, customer or employee.
+  >- customerEngine() is the customers source of access to thier accounts.
+  >- employeeEngine() is the employees tool to perform all tasks necessary to thier role. Admin employees have access to more options and basic empmloyees.
 * Service - Handles operations between the user interface (customers, and employees) and the bank core (database). *WiP*
 
 
