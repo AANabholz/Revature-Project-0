@@ -1,12 +1,9 @@
 package bank.revature.service;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import bank.revature.repository.BankCore;
 
 public class Account extends BankCore implements Serializable{
@@ -30,9 +27,8 @@ public class Account extends BankCore implements Serializable{
 	 */
 	private static final long serialVersionUID = 3180618345834838474L;
 	// Variables
-	private static final AtomicInteger idCounter = new AtomicInteger(0);
-	private int id; // Account Number
 	private HashSet<String> owners; // usernames of all owners on the account
+	private String id; // Account Number
 	private String type;
 	private String flag;
 	private double balance;
@@ -40,7 +36,7 @@ public class Account extends BankCore implements Serializable{
 	
 // Methods
 	public Account() {
-		this.id = idCounter.incrementAndGet();
+		this.id = getDateTime();
 		this.owners = new HashSet<String>();
 	}
 	
@@ -72,14 +68,18 @@ public class Account extends BankCore implements Serializable{
 		return toReturn;
 	}
 	
-	
-	
+	public static String getDateTime() {
+        Date dNow = new Date();
+        SimpleDateFormat ft = new SimpleDateFormat("yyMMddhhmmssMs");
+        String datetime = ft.format(dNow);
+        return datetime;
+    }
 	
 	// Getters
 	public HashSet<String> getOwners() {
 		return owners;
 	}
-	public int getID() {
+	public String getID() {
 		return id;
 	}
 	public String getType() {
@@ -97,7 +97,7 @@ public class Account extends BankCore implements Serializable{
 	protected void setOwners(HashSet<String> owners) {
 		this.owners = owners;
 	}
-	protected void setID(int id) {
+	protected void setID(String id) {
 		this.id = id;
 	}
 	public void setType(String type) {

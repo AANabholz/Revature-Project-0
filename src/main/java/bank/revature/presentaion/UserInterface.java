@@ -1,5 +1,6 @@
 package bank.revature.presentaion;
 
+import java.text.DecimalFormat;
 import java.util.Scanner;
 
 import bank.revature.models.Customer;
@@ -9,7 +10,7 @@ import bank.revature.repository.BankCore;
 import bank.revature.service.Account;
 import bank.revature.service.Service;
 
-public abstract class UserInterface {
+public abstract class UserInterface{
 	
 	// Holds methods that handle user interaction
 	
@@ -26,12 +27,12 @@ public abstract class UserInterface {
 	 * 
 	 */
 	
-// Variables
-	private static Scanner io;
-	
+
+
+	// Variables
 	private static BankCore bank;
-	
-	
+	private static Scanner io;
+	private static DecimalFormat dollarFormat = new DecimalFormat("#.00");
 	
 // Methods
 	
@@ -45,6 +46,12 @@ public abstract class UserInterface {
 		String inputString = "";
 		boolean keepRunning = true;
 		int switcher = -1;
+		
+		// Load Data
+		System.out.println("Loading Data...");
+		bank.loadData("src/main/CustomerData.txt", "src/main/EmployeeData.txt", "src/main/AccountData.txt");
+//		bank.loadTestData("src/main/TestUserData.txt", "src/main/TestAccData.txt");
+		System.out.println("Data Loaded!!!");
 		
 		do {
 			// Display Prompt
@@ -83,8 +90,13 @@ public abstract class UserInterface {
 				System.out.println("\nInput not recognized\n");
 				break;
 			}
-			
 		} while (keepRunning);
+		
+		// Save Data
+		System.out.println("Saving Data...");
+		bank.saveData("src/main/CustomerData.txt", "src/main/EmployeeData.txt", "src/main/AccountData.txt");
+//		bank.saveTestData("src/main/TestUserData.txt", "src/main/TestAccData.txt");
+		System.out.println("Data Saved!!!");
 	}
 	
 	public static void customerEngine(Customer cus) {
@@ -129,36 +141,38 @@ public abstract class UserInterface {
 			    } catch (NumberFormatException e) {
 			        switcher = -1;
 			    }
-				
+
+				clearScreen();
+				System.out.println();
 				switch (switcher) {
 				case 1: // Inquiry
-					clearScreen();
-					System.out.println("Which account would you like to view");
+					System.out.println("Which account would you like to view?");
 					acc[0] = chooseAccount(cus);
-					inquiry(acc[0]);
+					if (acc[0] != null)
+						inquiry(acc[0]);
 					clearScreen();
 					break;
 				case 2: // Withdraw
-					clearScreen();
 					System.out.println("Which account would you like to withdraw from?");
 					acc[0] = chooseAccount(cus);
-					withdraw(acc[0]);
+					if (acc[0] != null)
+						withdraw(acc[0]);
 					clearScreen();
 					break;
 				case 3: // Deposit
-					clearScreen();
 					System.out.println("Which account would you like to deposit into?");
 					acc[0] = chooseAccount(cus);
-					deposit(acc[0]);
+					if (acc[0] != null)
+						deposit(acc[0]);
 					clearScreen();
 					break;
 				case 4: // Transfer
-					clearScreen();
 					System.out.println("Which account would you like to transfer from?");
 					acc[0] = chooseAccount(cus);
 					System.out.println("Which account would you like to transfer into?");
 					acc[1] = chooseAccount(cus);
-					transfer(acc[0], acc[1]);
+					if (acc[0] != null && acc[1] != null )
+						transfer(acc[0], acc[1]);
 					clearScreen();
 					break;
 				case 5: // Apply for new account
@@ -220,6 +234,7 @@ public abstract class UserInterface {
 					viewAllCustomers();
 					break;
 				case 3: // Access Account
+					viewAllAccounts();
 					accessAccount(chooseAccount());
 					break;
 				case 4: // Access Customer
@@ -277,6 +292,7 @@ public abstract class UserInterface {
 					viewAllEmployees();
 					break;
 				case 4: // Access Account
+					viewAllAccounts();
 					accessAccount(chooseAccount());
 					break;
 				case 5: // Access Customer
@@ -286,6 +302,7 @@ public abstract class UserInterface {
 					accessEmployee(chooseEmployee());
 					break;
 				case 7: // Terminate Account
+					viewAllAccounts();
 					bank.removeAccount(chooseAccount());
 					break;
 				case 8: // Terminate Customer
@@ -413,6 +430,9 @@ public abstract class UserInterface {
 		
 		User temp = new User();
 		
+//		viewAllCustomers(); // FOR TESTING
+//		viewAllEmployees(); // FOR TESTING
+		
 		System.out.println("------------------------------");
 		System.out.println("-------- User Log In ---------");
 		System.out.println("------------------------------");
@@ -441,21 +461,29 @@ public abstract class UserInterface {
 				}
 			} while (keepLooping);
 			
-			if (loggedInUser.getUserType() == 'c') customerEngine((Customer)loggedInUser);
-			else if (loggedInUser.getUserType() == 'e' || loggedInUser.getUserType() == 'a') employeeEngine((Employee)loggedInUser);
+			if (loggedInUser.getUserType() == 'c') 
+				customerEngine((Customer)loggedInUser);
+			else if (loggedInUser.getUserType() == 'e' || loggedInUser.getUserType() == 'a') 
+				employeeEngine((Employee)loggedInUser);
 		}
 	}
 	
 	public static void logOut(User u) {
-		
 		clearScreen();
 		System.out.println("\tGoodbye " + u.getFirstName() + "!");
-		u = null;
 	}
 	
 	
 	
 	// Modular Methods
+	private static void viewCustomerAccounts(Customer cus) {
+		for (Account a : bank.getAccountsByOwner(cus.getUserName())) {
+			if (!a.getFlag().equals("") && !a.getFlag().equals(null))
+				System.out.print("{" + a.getFlag() + "} ");
+			System.out.println("\t[" + a.getID() + "] " + a.getType() + " - " + a.getOwners());
+		}
+	}
+	
 	private static void viewAllAccounts() {
 		for (Account a : bank.getAccounts()) {
 			if (!a.getFlag().equals("") && !a.getFlag().equals(null))
@@ -466,7 +494,7 @@ public abstract class UserInterface {
 	
 	private static void viewAllCustomers() {
 		for (Customer c : bank.getCustomers())
-			System.out.println("\t[" + c.getUserName() + "] " + c.getFirstName() + " " + c.getLastName() + " - " + c.getFlag());
+			System.out.println("\t[" + c.getUserName() + "] " + c.getFirstName() + " " + c.getLastName());
 	}
 	
 	private static void viewAllEmployees() {
@@ -488,6 +516,8 @@ public abstract class UserInterface {
 				toReturn = (Customer) bank.getUser(inputString);
 				looper = false;
 			}
+			else if (inputString.equals("0"))
+				looper = false;
 			else
 				System.out.println("Error: could not find a customer with that username...");
 				
@@ -510,6 +540,8 @@ public abstract class UserInterface {
 				toReturn = (Employee) bank.getUser(inputString);
 				looper = false;
 			}
+			else if (inputString.equals("0"))
+				looper = false;
 			else
 				System.out.println("Error: could not find an employee with that username...");
 				
@@ -522,22 +554,16 @@ public abstract class UserInterface {
 		Account toReturn = null;
 		String inputString = null;
 		boolean looper = true;
-		int findID = -1;
 		
 		do {
-			viewAllAccounts();
 			System.out.println("Enter the number of the account you wish to choose: ");
 			inputString = io.nextLine();
-			try {
-				findID = Integer.parseInt(inputString);
-		    } catch (NumberFormatException e) {
-		    	findID = 0;
-		    }
-			
-			if (bank.getAccountByID(findID) != null) {
-				toReturn = bank.getAccountByID(findID);
+			if (bank.getAccountByID(inputString) != null) {
+				toReturn = bank.getAccountByID(inputString);
 				looper = false;
 			}
+			else if (inputString.equals("0"))
+				looper = false;
 			else
 				System.out.println("Error: could not find an account with that number...");
 				
@@ -545,7 +571,7 @@ public abstract class UserInterface {
 		
 		return toReturn;
 	}
-	
+
 	private static Account chooseAccount(Customer cus) {
 		Account toReturn = new Account();
 		int i = 0;
@@ -571,6 +597,8 @@ public abstract class UserInterface {
 				toReturn = bank.getAccountsByOwner(cus.getUserName()).get(in - 1);
 				looper = false;
 			}
+			else if (in == 0)
+				looper = false;
 			else {
 				System.out.println("Invalid Input");
 				looper = true;
@@ -580,21 +608,28 @@ public abstract class UserInterface {
 		return toReturn;
 	}
 	
-	private static void inquiry(Account acc) {
-		System.out.println("Account: " + acc.getType());
-		System.out.println("Balance: " + Service.getBalance(acc));
-		System.out.println("Press 'Enter' to continue.");
-		io.nextLine();
+	private static void inquiry(Account a) {
+		clearScreen();
+		if (!a.getFlag().equals("App")) {
+			System.out.println("Account: " + a.getType());
+			System.out.println("Balance: $" + dollarFormat.format(Service.getBalance(a)));
+			System.out.println("Press 'Enter' to continue.");
+			io.nextLine();
+		}
+		else
+			System.out.println("This account has not been approved yet. Try again later...");
 	}
 	
 	private static void withdraw(Account acc) {
 		String inputString = null;
 		double amount = 0.0;
 		boolean looper = true;
-		
+
+		clearScreen();
+		if (!acc.getFlag().equals("App"))
 		withdrawLoop : do { // Choose amount to withdraw
 			System.out.println("Account: " + acc.getType());
-			System.out.println("Balance: " + Service.getBalance(acc));
+			System.out.println("Balance: $" + dollarFormat.format(Service.getBalance(acc)));
 			System.out.println("Our system only processes withdrawals of up to $10,000.");
 			System.out.println("Enter '0' to exit without withdrawing.");
 			System.out.println("Enter the amount you would like to withdraw: ");
@@ -637,16 +672,20 @@ public abstract class UserInterface {
 				looper = true;
 			}
 		} while (looper);
+		else
+			System.out.println("This account has not been approved yet. Try again later...");
 	}
 	
 	private static void deposit(Account acc) {
 		String inputString = null;
 		double amount = 0.0;
 		boolean looper = true;
-		
+
+		clearScreen();
+		if (!acc.getFlag().equals("App"))
 		depositLoop : do { // Choose amount to deposit
 			System.out.println("Account: " + acc.getType());
-			System.out.println("Balance: " + Service.getBalance(acc));
+			System.out.println("Balance: $" + dollarFormat.format(Service.getBalance(acc)));
 			System.out.println("Our system only processes deposits of up to $10,000.");
 			System.out.println("Enter '0' to exit without depositing.");
 			System.out.println("Enter the amount you would like to deposit: ");
@@ -686,18 +725,22 @@ public abstract class UserInterface {
 				looper = true;
 			}
 		} while (looper);
+		else
+			System.out.println("This account has not been approved yet. Try again later...");
 	}
 	
 	private static void transfer(Account from, Account to) {
 		String inputString = null;
 		double amount = 0.0;
 		boolean looper = true;
-		
+
+		clearScreen();
+		if (!from.getFlag().equals("App") && !to.getFlag().equals("App"))
 		transferLoop : do { // Choose amount to transfer
 			System.out.println("Account: " + from.getType());
-			System.out.println("Balance: " + Service.getBalance(from));
+			System.out.println("Balance: $" + dollarFormat.format(Service.getBalance(from)));
 			System.out.println("Account: " + to.getType());
-			System.out.println("Balance: " + Service.getBalance(to));
+			System.out.println("Balance: $" + dollarFormat.format(Service.getBalance(to)));
 			System.out.println("Our system only processes transfers of up to $10,000.");
 			System.out.println("Enter '0' to exit without transfering.");
 			System.out.println("Enter the amount you would like to transfer: ");
@@ -741,6 +784,8 @@ public abstract class UserInterface {
 				looper = true;
 			}
 		} while (looper);
+		else
+			System.out.println("One of these accounts has not been approved yet. Try again later...");
 	}
 	
 	private static void applyForAccount(Customer cus) {
@@ -788,7 +833,7 @@ public abstract class UserInterface {
 			System.out.println("Account: [" + acc.getID() + "] " + acc.getType() + " - " + acc.getFlag());
 			System.out.println("Owners: " + acc.getOwners());
 			System.out.println();
-			System.out.println("Balance: " + Service.getBalance(acc));
+			System.out.println("Balance: " + dollarFormat.format(Service.getBalance(acc)));
 			System.out.println();
 			System.out.println(" [1] Add or Remove Owner");
 			System.out.println(" [2] Withdraw");
@@ -913,7 +958,6 @@ public abstract class UserInterface {
 		String inputString = null;
 		int switcher = -1;
 		int inputInt = -1;
-		int accNum = 0;
 		boolean keepRunning = true;
 		boolean looper = true;
 		
@@ -968,13 +1012,8 @@ public abstract class UserInterface {
 				if (inputInt == 1) {
 					System.out.println("Enter the account number of the account to be added: ");
 					inputString = io.nextLine();
-					try {
-						accNum = Integer.parseInt(inputString);
-				    } catch (NumberFormatException e) {
-				    	accNum = 0;
-				    }
-					if (!bank.getAccountByID(accNum).equals(null)) {
-						bank.getAccountByID(accNum).addOwner(cus.getUserName());
+					if (!bank.getAccountByID(inputString).equals(null)) {
+						bank.getAccountByID(inputString).addOwner(cus.getUserName());
 					}
 					else
 						System.out.println("No user found with that username!");
@@ -982,13 +1021,8 @@ public abstract class UserInterface {
 				else if (inputInt == 2) {
 					System.out.println("Enter the account number of the account to be removed: ");
 					inputString = io.nextLine();
-					try {
-						accNum = Integer.parseInt(inputString);
-				    } catch (NumberFormatException e) {
-				    	accNum = 0;
-				    }
-					if (!bank.getAccountByID(accNum).equals(null)) {
-						bank.getAccountByID(accNum).removeOwner(cus.getUserName());
+					if (!bank.getAccountByID(inputString).equals(null)) {
+						bank.getAccountByID(inputString).removeOwner(cus.getUserName());
 					}
 					else
 						System.out.println("No user found with that username!");

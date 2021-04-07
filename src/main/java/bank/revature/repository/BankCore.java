@@ -29,11 +29,9 @@ public class BankCore{
 	 */
 	
 // Variables
-	
 	private HashSet<Customer> customers;
 	private HashSet<Employee> employees;
 	private HashSet<Account> accounts;
-	
 	
 // Methods
 	// Constructors
@@ -44,12 +42,12 @@ public class BankCore{
 	}
 	
 	// Data File Methods
-	public void loadData() {
+	public void loadData(String cusFile, String empFile, String accFile) {
 		Object obj = null;
 		boolean keepReading = true;
 		
 		// Read Customers
-		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/main/CustomerData.txt"))) {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(cusFile))) {
 			// Loop through file and load data
 			while (keepReading) {
 				obj = null;
@@ -73,7 +71,7 @@ public class BankCore{
 		}
 
 		// Read Employees
-		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/main/EmployeeData.txt"))) {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(empFile))) {
 			// Loop through file and load data
 			while (keepReading) {
 				obj = null;
@@ -97,7 +95,7 @@ public class BankCore{
 		}
 
 		// Read Accounts
-		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream("src/main/AccountData.txt"))) {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(accFile))) {
 			// Loop through file and load data
 			while (keepReading) {
 				obj = null;
@@ -121,9 +119,9 @@ public class BankCore{
 		}
 	}
 
-	public void saveData() {
+	public void saveData(String cusFile, String empFile, String accFile) {
 		// Write Customers
-		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/CustomerData.txt"))) {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(cusFile))) {
 			// Loop through data and write to file
 			for (Customer cus : customers)
 				try {
@@ -137,8 +135,9 @@ public class BankCore{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		// Write Employees
-		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/EmployeeData.txt"))) {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(empFile))) {
 			// Loop through data and write to file
 			for (Employee emp : employees)
 				try {
@@ -152,8 +151,9 @@ public class BankCore{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		// Write Accounts
-		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("src/main/AccountData.txt"))) {
+		try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(accFile))) {
 			// Loop through data and write to file
 			for (Account acc : accounts)
 				try {
@@ -169,10 +169,140 @@ public class BankCore{
 		}
 	}
 	
-	
+	public void loadTestData(String userFile, String accFile) {
+		User u = null;
+		Object obj = null;
+		boolean keepReading = true;
+		
+		// Read Users
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(userFile))) {
+			// Loop through file and load data
+			while (keepReading) {
+				try {
+					u = (User) ois.readObject();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				if (u.getUserType() == 'c')
+					customers.add((Customer) u);
+				else
+					employees.add((Employee) u);
+			}
+			ois.close();
+		} catch (EOFException e) {
+			//
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
+		// Read Accounts
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(accFile))) {
+			// Loop through file and load data
+			while (keepReading) {
+				obj = null;
+				try {
+					obj = ois.readObject();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				accounts.add((Account) obj);
+			}
+			ois.close();
+		} catch (EOFException e) {
+			//
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void saveTestData(String userFile, String accFile) {
+		// Write Customers
+				try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(userFile))) {
+					// Loop through data and write to file
+					for (Customer cus : customers)
+						try {
+							oos.writeObject(cus);
+						} catch (NotSerializableException e) {
+							System.out.println("Object Not Serializable");
+						}
+					oos.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				// Write Employees
+				try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(userFile))) {
+					// Loop through data and write to file
+					for (Employee emp : employees)
+						try {
+							oos.writeObject(emp);
+						} catch (NotSerializableException e) {
+							System.out.println("Object Not Serializable");
+						}
+					oos.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				// Write Accounts
+				try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(accFile))) {
+					// Loop through data and write to file
+					for (Account acc : accounts)
+						try {
+							oos.writeObject(acc);
+						} catch (NotSerializableException e) {
+							System.out.println("Object Not Serializable");
+						}
+					oos.close();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	}
+
+	public void testData() {
+		User u = null;
+		Customer c = null;
+		Employee e = null;
+		
+		// Testing Data
+		// Admin for if data is gone
+		u = new User("admin", "admin", "CEO", "Ofthebank", "", "", "", "", 'a');
+		e = new Employee(u);
+		employees.add(e);
+		u = new User("emp", "emp", "Employee", "Ofthebank", "", "", "", "", 'e');
+		e = new Employee(u);
+		employees.add(e);
+		u = new User("test", "test", "Chester", "Tester", "", "", "", "", 'c');
+		c = new Customer(u);
+		customers.add(c);
+		u = new User("cus", "cus", "Customer", "Offthestreet", "", "", "", "", 'c');
+		c = new Customer(u);
+		customers.add(c);
+		// Account data for testing
+		Account a1 = new Account("test", "Checking" , 5000.50, "");
+		Account a2 = new Account("cus", "Checking" , 5000.50, "");
+		Account a3 = new Account("test", "Checking" , 5000.50, "App");
+		Account a4 = new Account("test", "Saving" , 5000.50, "");
+		Account a5 = new Account("cus", "Saving" , 5000.50, "App");
+		accounts.add(a1);
+		accounts.add(a2);
+		accounts.add(a3);
+		accounts.add(a4);
+		accounts.add(a5);
+	}
 	
 	// Account Methods
+	
 	public void addAccount(Account a) {
 		accounts.add(a);
 	}
@@ -181,9 +311,9 @@ public class BankCore{
 		accounts.remove(a);
 	}
 	
-	public Account getAccountByID(int id) {
+	public Account getAccountByID(String id) {
 		for (Account a : accounts) 
-			if (a.getID() == id)
+			if (a.getID().equals(id))
 				return a;
 		
 		return null;
