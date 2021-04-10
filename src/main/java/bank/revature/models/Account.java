@@ -1,12 +1,10 @@
-package bank.revature.service;
+package bank.revature.models;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
-import bank.revature.repository.BankCore;
 
-public class Account extends BankCore implements Serializable{
+public class Account{
 	
 	// Customer object for user processing (Customers and First-Time-Users?)
 	
@@ -21,11 +19,6 @@ public class Account extends BankCore implements Serializable{
 	 * 
 	 */
 	
-	
-/**
-	 * 
-	 */
-	private static final long serialVersionUID = 3180618345834838474L;
 	// Variables
 	private HashSet<String> owners; // usernames of all owners on the account
 	private String id; // Account Number
@@ -36,17 +29,25 @@ public class Account extends BankCore implements Serializable{
 	
 // Methods
 	public Account() {
-		this.id = getDateTime();
 		this.owners = new HashSet<String>();
 	}
 	
-	public Account(String owner, String type, double balance, String flag) {
+	public Account(String owner, String type, String flag, double balance) { // new account
 		this();
 		addOwner(owner);
 		this.type = type;
-		this.balance = balance;
 		this.flag = flag;
+		this.balance = balance;
 	}
+	
+	public Account(HashSet<String> owners, String id, String type, String flag, double balance) { // load account
+		this();
+		this.id = id;
+		this.type = type;
+		this.flag = flag;
+		this.balance = balance;
+	}
+		
 		
 	
 	public void addOwner(String c) {
@@ -85,7 +86,7 @@ public class Account extends BankCore implements Serializable{
 	public String getType() {
 		return type;
 	}
-	protected double getBalance() {
+	public double getBalance() {
 		return balance;
 	}
 	public String getFlag() {
@@ -94,16 +95,16 @@ public class Account extends BankCore implements Serializable{
 	
 	
 	// Setters
-	protected void setOwners(HashSet<String> owners) {
+	public void setOwners(HashSet<String> owners) {
 		this.owners = owners;
 	}
-	protected void setID(String id) {
+	public void setID(String id) {
 		this.id = id;
 	}
 	public void setType(String type) {
 		this.type = type;
 	}
-	protected void setBalance(double balance) {
+	public void setBalance(double balance) {
 		this.balance = balance;
 	}
 	public void setFlag(String flag) {

@@ -3,14 +3,13 @@ package bank.revature.presentaion;
 import java.text.DecimalFormat;
 import java.util.Scanner;
 
+import bank.revature.models.Account;
 import bank.revature.models.Customer;
 import bank.revature.models.Employee;
 import bank.revature.models.User;
-import bank.revature.repository.BankCore;
-import bank.revature.service.Account;
 import bank.revature.service.Service;
 
-public abstract class UserInterface{
+public abstract class UserInterface extends Service{
 	
 	// Holds methods that handle user interaction
 	
@@ -30,7 +29,7 @@ public abstract class UserInterface{
 
 
 	// Variables
-	private static BankCore bank;
+	private static Service bank;
 	private static Scanner io;
 	private static DecimalFormat dollarFormat = new DecimalFormat("#.00");
 	
@@ -40,18 +39,12 @@ public abstract class UserInterface{
 	
 	
 	// Engine Methods
-	public static void startEngine(BankCore b) {
-		bank = b;
+	public static void startEngine() {
+		bank = new Service();
 		io = new Scanner(System.in);
 		String inputString = "";
 		boolean keepRunning = true;
 		int switcher = -1;
-		
-		// Load Data
-		System.out.println("Loading Data...");
-		bank.loadData("src/main/CustomerData.txt", "src/main/EmployeeData.txt", "src/main/AccountData.txt");
-//		bank.loadTestData("src/main/TestUserData.txt", "src/main/TestAccData.txt");
-		System.out.println("Data Loaded!!!");
 		
 		do {
 			// Display Prompt
@@ -91,20 +84,14 @@ public abstract class UserInterface{
 				break;
 			}
 		} while (keepRunning);
-		
-		// Save Data
-		System.out.println("Saving Data...");
-		bank.saveData("src/main/CustomerData.txt", "src/main/EmployeeData.txt", "src/main/AccountData.txt");
-//		bank.saveTestData("src/main/TestUserData.txt", "src/main/TestAccData.txt");
-		System.out.println("Data Saved!!!");
 	}
 	
 	public static void customerEngine(Customer cus) {
 		Account[] acc = new Account[2];
 		String inputString = null;
 		int switcher = 0;
-		int numOfAccounts = bank.getAccountsByOwner(cus.getUserName()).size();
 		boolean keepRunning = true;
+		int numOfAccounts = bank.getAccountsByOwner(cus.getUserName()).size();
 		
 		if (numOfAccounts == 0) { // If the customer has no accounts and no account applications
 			System.out.println("You do not have any open accounts, please apply for an account.");
@@ -112,10 +99,10 @@ public abstract class UserInterface{
 			System.out.println("Your application will be processed as soon as possible.");
 		}
 		else if // If the customer has no accounts but has pending account applications
-		(numOfAccounts == 1 && bank.getAccountsByOwner(cus.getUserName()).get(0).getFlag().equals("App")) 
+		(numOfAccounts == 1 && ((Account) bank.getAccountsByOwner(cus.getUserName()).toArray()[0]).getFlag().equals("App"))
 			System.out.println("Your account has not been approved yet, please try again later.");
 		else if // If the customer has 1 or more accounts and at least 1 has already been approved
-		(numOfAccounts > 1 || (numOfAccounts == 1 && !bank.getAccountsByOwner(cus.getUserName()).get(0).getFlag().equals("App"))) {
+		(numOfAccounts >= 1) {
 			do {
 				clearScreen();
 				System.out.println("------------------------------");
@@ -594,7 +581,7 @@ public abstract class UserInterface{
 		        in = 0;
 		    }
 			if (in > 0 && in <= i) { // If input is between 1 and the total number of this users accounts
-				toReturn = bank.getAccountsByOwner(cus.getUserName()).get(in - 1);
+				toReturn = (Account) bank.getAccountsByOwner(cus.getUserName()).toArray()[in - 1];
 				looper = false;
 			}
 			else if (in == 0)
@@ -813,7 +800,7 @@ public abstract class UserInterface{
 			}
 		} while (looper);
 		
-		acc = new Account(cus.getUserName(), type, 0.0, "App");
+		acc = new Account(cus.getUserName(), type, "App", 0.0);
 		bank.addAccount(acc);
 	}
 	

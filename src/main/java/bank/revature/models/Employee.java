@@ -53,6 +53,16 @@ public class Employee extends User{
 		salary = s;
 		wage = w;
 	}
+	
+	public Employee(User user, String p, String b, double s, double w, double h) {
+		this();
+		this.copyUser(user, this);
+		position = p;
+		branch = b;
+		salary = s;
+		wage = w;
+		hours = h;
+	}
 
 	
 	

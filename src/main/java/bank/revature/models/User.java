@@ -118,7 +118,7 @@ public class User implements Serializable {
 	public String getUserName() {
 		return username;
 	}
-	protected String getPassword() {
+	public String getPassword() {
 		return password;
 	}
 	public String getFirstName() {
@@ -146,10 +146,10 @@ public class User implements Serializable {
 
 	
 	// Setter Methods
-	protected void setUserName(String username) {
+	public void setUserName(String username) {
 		this.username = username;
 	}
-	protected void setPassword(String password) {
+	public void setPassword(String password) {
 		this.password = password;
 	}
 	public void setFirstName(String f) {

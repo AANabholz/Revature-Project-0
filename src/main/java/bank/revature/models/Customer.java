@@ -8,8 +8,6 @@ public class Customer extends User {
 	/*
 	 * 
 	 * 
-	 * Maybe save account amounts as strings so the double limit is negated?
-	 * 
 	 * 
 	 * 
 	 * 
@@ -25,7 +23,7 @@ public class Customer extends User {
 
 // Methods
 	public Customer() {
-		flag = "";
+		
 	}
 	public Customer(User user) {
 		this();

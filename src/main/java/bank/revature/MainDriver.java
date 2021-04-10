@@ -1,7 +1,7 @@
 package bank.revature;
 
 import bank.revature.presentaion.UserInterface;
-import bank.revature.repository.BankCore;
+import bank.revature.utility.ConnectionFactory;
 
 public class MainDriver{
 	
@@ -17,9 +17,17 @@ public class MainDriver{
 	 */
 	
 	public static void main(String[] args) {
-		BankCore bank = new BankCore();
-		
-		UserInterface.startEngine(bank);
+		try {
+			Class.forName("org.postgresql.Driver");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (ConnectionFactory.getConnection() != null) {
+			System.out.println("Successful Connection!");
+			UserInterface.startEngine();
+		}
+//		UserInterface.startEngine();
 	}
 }
 
